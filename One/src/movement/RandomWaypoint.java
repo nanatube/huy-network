@@ -14,7 +14,7 @@ import core.Settings;
 public class RandomWaypoint extends MovementModel {
 	/** how many waypoints should there be per path */
 	private static final int PATH_LENGTH = 1;
-	private Coord lastWaypoint;
+	protected Coord lastWaypoint;
 	
 	public RandomWaypoint(Settings settings) {
 		super(settings);
