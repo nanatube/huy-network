@@ -19,7 +19,7 @@ Scenario.nrofHostGroups = 2
 
 # common settings for all groups
 Group.movementModel = SemiClusterMovement
-Group.router = EpidemicRouter
+Group.router = TestRouter
 Group.bufferSize = 5M
 Group.waitTime = 0, 120
 #All nodes have the firstinterface inteface
@@ -29,7 +29,7 @@ Group.interface1 = firstinterface
 Group.speed = 0.5, 1.5
 #Group.msgTtl = 60
 
-Group.nrofHosts = 1
+Group.nrofHosts = 2
 Group.nrofApplications = 0
 
 # group1 (pedestrians) specific settings
