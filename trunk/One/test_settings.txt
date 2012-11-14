@@ -52,7 +52,7 @@ Group.nrofApplications = 0
 Group1.groupID = a
 Group1.clusterRange = 100
 Group1.clusterCenter = 200, 200
-Group1.nrofHosts = 2
+Group1.nrofHosts = 1
 #Group1.speed = 0, 0
 
 
@@ -64,7 +64,7 @@ Group5.clusterCenter = 700, 200
 Group2.groupID = c
 Group2.clusterRange = 100
 Group2.clusterCenter = 1200, 200
-Group2.nrofHosts = 0
+Group2.nrofHosts = 1
 #Group2.speed = 0, 0
 
 # group4 (pedestrians) specific settings
