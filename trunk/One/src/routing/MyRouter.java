@@ -656,7 +656,7 @@ public abstract class MyRouter extends MessageRouter {
 	
 			construct = true;
 		}
-		if (SimClock.getTime() >= 220){
+		if (SimClock.getTime() >= 220 && thisNode.getName().equals("a1")){
 			System.out.println("");
 			}
 	}
