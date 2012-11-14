@@ -535,16 +535,23 @@ public class DTNHost implements Comparable<DTNHost> {
 		}
 	}
 	
-	public void addChild(DTNHost father){
+	public void addChild(DTNHost children){
 		boolean check = false;
-		for (DTNHost child : father.childrenMap){
+		for (DTNHost child : this.childrenMap){
 			if (child.getName().equals(this.getName())) {
 				check = true;
 			}
 		}
 		if (!check) {
-			father.childrenMap.add(this);
+			this.childrenMap.add(children);
 		}
 	}
+	public void updateChildPath() {
+		for (DTNHost child : this.childrenMap) {
+			child.setPathToRoot(this);
+			child.updateChildPath();
+		}		
+	}
+
 
 }
