@@ -91,7 +91,7 @@ public class Message implements Comparable<Message> {
 	}
 
 	/**
-	 * Returns the node this message is originally to
+	 * Returns the node this message is originally to (dich)
 	 * @return the node this message is originally to
 	 */
 	public DTNHost getTo() {

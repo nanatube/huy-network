@@ -2,7 +2,7 @@ package routing;
 
 import core.Settings;
 
-public class TestRouter extends ActiveRouter {
+public class TestRouter extends MyRouter {
 
 	public TestRouter(Settings s) {
 		super(s);

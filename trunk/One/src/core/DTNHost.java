@@ -6,7 +6,9 @@ package core;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import movement.MovementModel;
 import movement.Path;
@@ -33,6 +35,14 @@ public class DTNHost implements Comparable<DTNHost> {
 	private List<MovementListener> movListeners;
 	private List<NetworkInterface> net;
 	private ModuleCommunicationBus comBus;
+	
+	
+	public int numConnection;
+	public int numClusterConnection;
+	public DTNHost homeAgent;
+	public List<DTNHost> pathToRoot;
+	public List<DTNHost> childrenMap;
+	public Map<DTNHost, Double> meetingProb;
 
 	static {
 		DTNSim.registerForReset(DTNHost.class.getCanonicalName());
@@ -86,6 +96,12 @@ public class DTNHost implements Comparable<DTNHost> {
 				l.initialLocation(this, this.location);
 			}
 		}
+		this.numConnection = 0;
+		this.numClusterConnection = 0;
+		this.homeAgent = null;
+		this.pathToRoot = new ArrayList<DTNHost>();
+		this.childrenMap = new ArrayList<DTNHost>();
+		this.meetingProb = new HashMap<DTNHost, Double>();
 	}
 	
 	/**
@@ -499,6 +515,36 @@ public class DTNHost implements Comparable<DTNHost> {
 	 */
 	public int compareTo(DTNHost h) {
 		return this.getAddress() - h.getAddress();
+	}
+	
+	public String getName(){
+		return this.name;
+	}
+	
+	public void setPathToRoot(DTNHost father){
+		for (DTNHost far : father.pathToRoot) {
+			boolean check = false;
+			for (DTNHost child : this.pathToRoot) {
+				if (far.getName().equals(child.getName())) {
+					check = true;
+				}
+			}
+			if (!check) {
+				this.pathToRoot.add(far);
+			}
+		}
+	}
+	
+	public void addChild(DTNHost father){
+		boolean check = false;
+		for (DTNHost child : father.childrenMap){
+			if (child.getName().equals(this.getName())) {
+				check = true;
+			}
+		}
+		if (!check) {
+			father.childrenMap.add(this);
+		}
 	}
 
 }
