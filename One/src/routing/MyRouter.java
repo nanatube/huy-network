@@ -607,16 +607,10 @@ public abstract class MyRouter extends MessageRouter {
 		DTNHost thisNode = this.getHost();
 
 		if (SimClock.getTime() >= 200 && !construct) {
-			int numConnectionMax = thisNode.numConnection;
+			int numConnectionMax = 0 ;
 			DTNHost father = thisNode;
-			for (Connection c : getConnections()) {
-				DTNHost peer = c.getOtherNode(getHost());
-				if (peer.numConnection > numConnectionMax) {
-					numConnectionMax = peer.numConnection;
-					father = peer;
-				}
-			}
-			if (thisNode.getName().equals(father.getName()) && (thisNode.getName().startsWith("s"))) {
+			// truong hop cluster head
+			if ((thisNode.getName().startsWith("s"))) {
 				numConnectionMax = thisNode.numClusterConnection;
 				father = thisNode;
 				for (Connection c : getConnections()) {
@@ -626,8 +620,16 @@ public abstract class MyRouter extends MessageRouter {
 						father = peer;
 					}
 				}
-				if (father != null && thisNode.numConnection == father.numConnection) {
-					
+			}
+			else { //truong hop ko phai la cluster head
+			    numConnectionMax = thisNode.numConnection;
+				father = thisNode;
+				for (Connection c : getConnections()) {
+					DTNHost peer = c.getOtherNode(getHost());
+					if (peer.numConnection > numConnectionMax) {
+						numConnectionMax = peer.numConnection;
+						father = peer;
+					}
 				}
 			}
 			
@@ -642,9 +644,8 @@ public abstract class MyRouter extends MessageRouter {
 				// update path bang cac father cua no
 				thisNode.setPathToRoot(father);
 				// update lai cho cac con cua chinh no
-				for (DTNHost child : thisNode.childrenMap) {
-					child.setPathToRoot(thisNode);
-				}
+				thisNode.updateChildPath();
+
 				// lua chon homeAgent
 				if (!setHomeAgent) {
 					thisNode.homeAgent = thisNode.pathToRoot.get(0);
