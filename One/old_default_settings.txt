@@ -29,7 +29,7 @@ highspeedInterface.transmitSpeed = 10M
 highspeedInterface.transmitRange = 1000
 
 # Define 6 different node groups
-Scenario.nrofHostGroups = 7
+Scenario.nrofHostGroups = 6
 
 ## Group-specific settings:
 # groupID : Group's identifier. Used as the prefix of host names
@@ -109,20 +109,6 @@ Group6.routeType = 2
 Group6.waitTime = 10, 30
 Group6.speed = 7, 10
 Group6.nrofHosts = 2
-
-
-# The fixed groups
-Group7.groupID = Fi
-Group7.bufferSize = 50M
-Group7.movementModel = MapRouteMovement
-Group7.routeFile = data/tram3.wkt
-Group7.routeType = 1
-Group7.waitTime = 10, 30
-Group7.speed = 0, 0
-Group7.nrofHosts = 2
-Group7.nrofInterfaces = 2
-Group7.interface1 = btInterface
-Group7.interface2 = highspeedInterface
 
 
 ## Message creation parameters 

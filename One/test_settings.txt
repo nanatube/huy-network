@@ -12,53 +12,87 @@ Scenario.endTime = 43k
 firstinterface.type = SimpleBroadcastInterface
 # transmit speed of 2 Mbps = 250kBps
 firstinterface.transmitSpeed = 250k
-firstinterface.transmitRange = 10
+firstinterface.transmitRange = 100
 
 
-Scenario.nrofHostGroups = 2
+# High speed, long range, interface for group 4
+highspeedInterface.type = SimpleBroadcastInterface
+highspeedInterface.transmitSpeed = 10M
+highspeedInterface.transmitRange = 510
+
+
+Scenario.nrofHostGroups = 3
 
 # common settings for all groups
 Group.movementModel = SemiClusterMovement
 Group.router = TestRouter
+ProphetRouter.secondsInTimeUnit = 3
+SprayAndWaitRouter.nrofCopies = 3
+SprayAndWaitRouter.binaryMode = 1
+QualityEpidemic.lambda = 20
+QualityEpidemic.gamma = 20
+SimpleRouter.lambda = 20
+SimpleRouter.gamma = 20
+SimpleRouter.familiarThreshold = 100
+QualityEpidemic.familiarThreshold = 100
 Group.bufferSize = 5M
 Group.waitTime = 0, 120
 #All nodes have the firstinterface inteface
 Group.nrofInterfaces = 1
 Group.interface1 = firstinterface
 # walking speeds
-Group.speed = 0.5, 1.5
+#Group.speed = 0.5, 1.5
+Group.speed = 0, 0
 #Group.msgTtl = 60
 
-Group.nrofHosts = 2
+Group.nrofHosts = 1
 Group.nrofApplications = 0
 
 # group1 (pedestrians) specific settings
-Group1.groupID = p
+Group1.groupID = a
+Group1.clusterRange = 100
+Group1.clusterCenter = 200, 200
+#Group1.speed = 0, 0
 
-#Group2.groupID = q
-#Group2.clusterCenter = 600, 100
 
-#Group3.groupID = r
-#Group3.clusterCenter = 350, 533
+# group5 (pedestrians) specific settings
+Group5.groupID = b
+Group5.clusterRange = 50
+Group5.clusterCenter = 700, 200
+# group2 (pedestrians) specific settings
+Group2.groupID = c
+Group2.clusterRange = 100
+Group2.clusterCenter = 1200, 200
+#Group2.nrofHosts = 1
+#Group2.speed = 0, 0
+
+# group4 (pedestrians) specific settings
+Group4.groupID = d
+Group4.clusterRange = 50
+Group4.clusterCenter = 1450, 450
+
 
 # The Tram groups
-Group2.groupID = s
-Group2.bufferSize = 50M
-Group2.movementModel = FixedMovement
-Group2.nrOfLocationFiles = 1
-Group2.locationsFile1 = data/FixedLocations/huong.wkt
-Group2.routeType = 1
-Group2.waitTime = 10, 30
-Group2.speed = 0, 0
-Group2.nrofHosts = 10
-Group2.nrofInterfaces = 1
-Group2.interface1 = firstinterface
-Group2.randomPlacement = false
+Group3.groupID = s
+Group3.bufferSize = 50M
+Group3.movementModel = FixedMovement
+Group3.nrOfLocationFiles = 1
+Group3.locationsFile1 = data/FixedLocations/huong2.wkt
+Group3.routeType = 1
+Group3.waitTime = 10, 30
+Group3.speed = 0, 0
+Group3.nrofHosts = 10
+Group3.nrofInterfaces = 2
+Group3.interface1 = firstinterface
+Group3.randomPlacement = false
+Group3.interface2 = highspeedInterface
 
 ## Map based movement -movement model specific settings
 MapBasedMovement.nrofMapFiles = 2
-MapBasedMovement.mapFile1 = data/cluster/huong_map.wkt
+MapBasedMovement.mapFile1 = data/cluster/huong_map_2.wkt
 MapBasedMovement.mapFile2 = data/cluster/origin.wkt
+
+
 
 
 ## Message creation parameters 
@@ -68,11 +102,11 @@ Events.nrof = 1
 Events1.class = MessageEventGenerator
 # (following settings are specific for the MessageEventGenerator class)
 # Creation interval in seconds (one new message every 25 to 35 seconds)
-Events1.interval = 25,35
+Events1.interval = 25, 3500
 # Message sizes (50kB - 150kB)
 Events1.size = 50k,150k
 # range of message source/destination addresses
-Events1.hosts = 0,6
+Events1.hosts = 0, 2
 # Message ID prefix
 Events1.prefix = M
 
