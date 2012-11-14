@@ -9,9 +9,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-
-import sun.text.normalizer.UProperty;
-
 import core.Connection;
 import core.DTNHost;
 import core.Message;
@@ -89,21 +86,28 @@ public abstract class MyRouter extends MessageRouter {
 	 * anything but subclasses may want to override this.
 	 */
 	@Override
-	public void changedConnection(Connection con) {
+	public void changedConnection(Connection con) { 
 		DTNHost peer = con.getOtherNode(getHost());
 		DTNHost thisNode = this.getHost();
 		if (!con.isUp()) {
 			peer.numConnection--;
-			if (thisNode.getName().startsWith("s")
-					&& peer.getName().startsWith("s"))
-				peer.numClusterConnection--;
-		} else {
-			peer.numConnection++;
-			if (thisNode.getName().startsWith("s")
-					&& peer.getName().startsWith("s"))
-				peer.numClusterConnection++;
+			if (thisNode.getName().startsWith("s") && peer.getName().startsWith("s")) peer.numClusterConnection--;
+			// Neu gap mot node cluster khac thi join vao
+			if (peer.getName().startsWith("s") && thisNode.pathToRoot.isEmpty()) {
+				thisNode.setPathToRoot(peer);
+				peer.addChild(thisNode);
+			}
 		}
-		System.out.println(peer.getName() + peer.numConnection);
+		else {
+			peer.numConnection++;
+			if (thisNode.getName().startsWith("s") && peer.getName().startsWith("s")) peer.numClusterConnection++;
+			// thoat khoi cluster
+			if (peer.getName().startsWith("s") && !thisNode.pathToRoot.isEmpty() && thisNode.pathToRoot.get(0).getName().equals(peer.getName())) {
+				thisNode.removePathToRoot(peer);
+				peer.removeChild(thisNode);
+			}
+		}
+		System.out.println(peer.getName()+ peer.numConnection);
 		// goi cac ham tinh toan lai ngay khi connection thay doi
 	}
 
