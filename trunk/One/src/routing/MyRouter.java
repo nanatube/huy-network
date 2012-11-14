@@ -617,8 +617,8 @@ public abstract class MyRouter extends MessageRouter {
 				}
 			}
 			if (thisNode.getName().equals(father.getName()) && (thisNode.getName().startsWith("s"))) {
-				numConnectionMax = 0;
-				father = null;
+				numConnectionMax = thisNode.numClusterConnection;
+				father = thisNode;
 				for (Connection c : getConnections()) {
 					DTNHost peer = c.getOtherNode(getHost());
 					if (peer.numConnection > numConnectionMax) {
