@@ -53,6 +53,10 @@ public class SemiClusterMovement extends RandomWaypoint {
 		this.p_x_center = coord.getX();
 		this.p_y_center = coord.getY();
 	}
+	
+	public Coord getCenter(){
+		return new Coord(this.p_x_center, this.p_y_center);
+	}
 
 	public SemiClusterMovement(Settings s) {
 		super(s);
@@ -83,30 +87,19 @@ public class SemiClusterMovement extends RandomWaypoint {
 
 	@Override
 	public Coord getInitialLocation() {
+		Coord randCoord = randomCoordFromCenter();
 		List<MapNode> nodes = map.getNodes();
-		MapNode n, n2;
-		Coord n2Location, nLocation, placement;
-		double dx, dy;
-		double rnd = rng.nextDouble();
-		n = nodes.get(rng.nextInt(nodes.size()));
-
-		// choose a random neighbor of the selected node
-		n2 = n.getNeighbors().get(rng.nextInt(n.getNeighbors().size()));
-
-		nLocation = n.getLocation();
-		n2Location = n2.getLocation();
-
-		placement = n.getLocation().clone();
-
-		dx = rnd * (n2Location.getX() - nLocation.getX());
-		dy = rnd * (n2Location.getY() - nLocation.getY());
-
-		placement.translate(dx, dy); // move coord from n towards n2
+		MapNode n = null;
+		for (int i=0;i<nodes.size();i++){
+			if (nodes.get(i).getLocation().equals(getCenter())){
+				n = nodes.get(i);
+				break;
+			}
+		}
 
 		this.lastMapNode = n;
-		this.setCenter(n.getLocation());
-		this.lastWaypoint = n.getLocation();
-		return placement;
+		this.lastWaypoint = randCoord;
+		return randCoord;
 	}
 
 	private SimMap readMap() {
@@ -245,7 +238,9 @@ public class SemiClusterMovement extends RandomWaypoint {
 			if (n2.size() == 0) { // only option is to go back
 				nextNode = prevNode;
 			} else { // choose a random node from remaining neighbors
+				do{
 				nextNode = n2.get(rng.nextInt(n2.size()));
+				}while (nextNode.getLocation().getX()==0);
 			}
 
 			prevNode = curNode;

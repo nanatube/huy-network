@@ -102,6 +102,7 @@ abstract public class NetworkInterface implements ModuleCommunicationListener {
 		this.interfacetype = ni.interfacetype;
 		this.transmitRange = ni.transmitRange;
 		this.transmitSpeed = ni.transmitSpeed;
+		this.scanInterval = ni.scanInterval;
 		
 		/* draw lastScanTime of [0 -- scanInterval] */
 		this.lastScanTime = rng.nextDouble() * scanInterval;

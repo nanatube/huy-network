@@ -166,6 +166,7 @@ public class World {
 	 * Runs all external events that are due between the time when
 	 * this method is called and after one update interval.
 	 */
+	int i = 0;
 	public void update () {
 		double runUntil = SimClock.getTime() + this.updateInterval;
 
@@ -175,7 +176,10 @@ public class World {
 		while (this.nextQueueEventTime <= runUntil) {
 			simClock.setTime(this.nextQueueEventTime);
 			ExternalEvent ee = this.nextEventQueue.nextEvent();
+			if (i==0){
 			ee.processEvent(this);
+			i=1;
+			}
 			updateHosts(); // update all hosts after every event
 			setNextEventQueue();
 		}
