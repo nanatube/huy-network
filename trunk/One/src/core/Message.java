@@ -52,6 +52,15 @@ public class Message implements Comparable<Message> {
 	 * properties is made when replicating messages
 	 */
 	private Map<String, Object> properties;
+	
+	public int kind; 
+	// kind la kieu cua Message, neu kind = 1 thi tuc la Message da duoc gui den home Agent
+	// neu kind = 2 Message chua content ben trong, kind =10 tuc la message update
+	// kind = 20 tuc la da duoc gui den homeAgent va da duoc gui den newLocation hien tai
+	// 40 tuc la respone message da den dich
+	public Message contentMessage;
+	public DTNHost newCluster;
+	public DTNHost nodeU;
 
 	/** Application ID of the application that created the message */
 	private String appID;
@@ -89,11 +98,38 @@ public class Message implements Comparable<Message> {
 		this.requestMsg = null;
 		this.properties = null;
 		this.appID = null;
+		this.kind = 0;
+		this.contentMessage = null;
+		this.newCluster = null;
+		this.nodeU = null;
 
 		Message.nextUniqueId++;
 		addNodeOnPath(from);
 	}
 
+	public Message(DTNHost from, DTNHost to, String id, int size, int kind, Message content, DTNHost newCluster,  DTNHost nodeU) {
+		this.from = from;
+		this.to = to;
+		this.id = id;
+		this.size = size;
+		this.path = new ArrayList<DTNHost>();
+		this.uniqueId = nextUniqueId;
+
+		this.timeCreated = SimClock.getTime();
+		this.timeReceived = this.timeCreated;
+		this.initTtl = INFINITE_TTL;
+		this.responseSize = 0;
+		this.requestMsg = null;
+		this.properties = null;
+		this.appID = null;
+		this.kind = kind;
+		this.contentMessage = content;
+		this.newCluster = newCluster;
+		this.nodeU = nodeU;
+
+		Message.nextUniqueId++;
+		addNodeOnPath(from);
+	}
 	/**
 	 * Returns the node this message is originally from
 	 * 
@@ -373,7 +409,7 @@ public class Message implements Comparable<Message> {
 	 * @return A replicate of the message
 	 */
 	public Message replicate() {
-		Message m = new Message(from, to, id, size);
+		Message m = new Message(from, to, id, size, kind, contentMessage, newCluster, nodeU);
 		m.copyFrom(this);
 		return m;
 	}

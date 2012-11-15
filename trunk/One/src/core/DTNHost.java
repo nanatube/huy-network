@@ -42,7 +42,8 @@ public class DTNHost implements Comparable<DTNHost> {
 	public DTNHost homeAgent;
 	public List<DTNHost> pathToRoot;
 	public List<DTNHost> childrenMap;
-	public Map<DTNHost, DTNHost> locationOfChid;
+	public List<DTNHost> childLocation;
+	public List<DTNHost> locationOfChid;
 	public Map<DTNHost, Double> meetingProb;
 
 	static {
@@ -103,7 +104,8 @@ public class DTNHost implements Comparable<DTNHost> {
 		this.pathToRoot = new ArrayList<DTNHost>();
 		this.childrenMap = new ArrayList<DTNHost>();
 		this.meetingProb = new HashMap<DTNHost, Double>();
-		this.locationOfChid = new HashMap<DTNHost, DTNHost>();
+		this.locationOfChid = new ArrayList<DTNHost>();
+		this.childLocation = new ArrayList<DTNHost>();
 	}
 	
 	/**

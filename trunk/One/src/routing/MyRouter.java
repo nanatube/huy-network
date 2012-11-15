@@ -92,20 +92,29 @@ public abstract class MyRouter extends MessageRouter {
 		if (!con.isUp()) {
 			peer.numConnection--;
 			if (thisNode.getName().startsWith("s") && peer.getName().startsWith("s")) peer.numClusterConnection--;
-			// Neu gap mot node cluster khac thi join vao
-			if (peer.getName().startsWith("s") && thisNode.pathToRoot.isEmpty()) {
-				thisNode.setPathToRoot(peer);
-				peer.addChild(thisNode);
+			// thoat khoi cluster
+			if (peer.getName().startsWith("s") && !thisNode.pathToRoot.isEmpty() && thisNode.pathToRoot.get(0).getName().equals(peer.getName()) && SimClock.getTime() >= 2.1) {
+				thisNode.removePathToRoot(peer);
+				peer.removeChild(thisNode);
 			}
+
 		}
 		else {
 			peer.numConnection++;
 			if (thisNode.getName().startsWith("s") && peer.getName().startsWith("s")) peer.numClusterConnection++;
-			// thoat khoi cluster
-			if (peer.getName().startsWith("s") && !thisNode.pathToRoot.isEmpty() && thisNode.pathToRoot.get(0).getName().equals(peer.getName())) {
-				thisNode.removePathToRoot(peer);
-				peer.removeChild(thisNode);
+			
+			// Neu gap mot node cluster khac thi join vao
+			if (peer.getName().startsWith("s") && thisNode.pathToRoot.isEmpty() && SimClock.getTime() >= 2.1) {
+				thisNode.pathToRoot.add(peer);
+				thisNode.setPathToRoot(peer);
+				peer.addChild(thisNode);
+				Double randDouble = new Random().nextDouble();
+				String randString = "UpdateLocation" + randDouble.toString();
+				//tao message thong bao vi tri moi cho home Agent
+				Message newM = new Message(thisNode, thisNode.homeAgent,randString, 0, 10, null, peer, thisNode);
+				createNewMessage(newM);
 			}
+
 		}
 		System.out.println(peer.getName()+ peer.numConnection);
 		// goi cac ham tinh toan lai ngay khi connection thay doi
@@ -163,7 +172,7 @@ public abstract class MyRouter extends MessageRouter {
 		if (m.getTo() == getHost() && m.getResponseSize() > 0) {
 			// generate a response message
 			Message res = new Message(this.getHost(), m.getFrom(),
-					RESPONSE_PREFIX + m.getId(), m.getResponseSize());
+					RESPONSE_PREFIX + m.getId(), m.getResponseSize(),0,null,null,null);
 			this.createNewMessage(res);
 			this.getMessage(RESPONSE_PREFIX + m.getId()).setRequest(m);
 		}
@@ -583,6 +592,8 @@ public abstract class MyRouter extends MessageRouter {
 		}
 		return false;
 	}
+	
+	// tim ra nen gui di cho con nao
 
 	private Connection findNextChildConnection(DTNHost destination) {
 		DTNHost temp = destination;
@@ -611,7 +622,7 @@ public abstract class MyRouter extends MessageRouter {
 	 */
 	@Override
 	public void update() {
-
+		//createNewMessage(new Message(host, host, null, bufferSize));
 		super.update();
 
 		/*
@@ -665,7 +676,8 @@ public abstract class MyRouter extends MessageRouter {
 		}
 
 		DTNHost thisNode = this.getHost();
-		if (SimClock.getTime() >= 200 && !construct) {
+
+		if (SimClock.getTime() >= 2 && !construct) {
 			int numConnectionMax = 0;
 			DTNHost father = thisNode;
 			// truong hop cluster head
@@ -706,6 +718,9 @@ public abstract class MyRouter extends MessageRouter {
 				// lua chon homeAgent
 				if (!setHomeAgent) {
 					thisNode.homeAgent = thisNode.pathToRoot.get(0);
+					// khoi tao location
+					father.childLocation.add(thisNode);
+					father.locationOfChid.add(father);
 					setHomeAgent = true;
 				}
 			}
@@ -718,6 +733,7 @@ public abstract class MyRouter extends MessageRouter {
 
 			// Try first the messages that can be delivered to final recipient
 			if (exchangeDeliverableMessages() != null) {
+				// hoac la neu nhu ma ko gui duoc thang den dich, nhung m bay gio da la 1 roi thi cung drop
 				return; // started a transfer, don't try others (yet)
 			}
 
@@ -742,18 +758,51 @@ public abstract class MyRouter extends MessageRouter {
 			}
 			for (Message m : messages) {
 				if (m.transferTime > 0) {
-					Connection con = findNextChildConnection(m.getTo());
-					int retVal;
-					if (con == null) {
-						retVal = startTransfer(m, upClusterConnection);
-					} else {
-						retVal = startTransfer(m, con);
+					DTNHost destination = m.getTo();
+					if (destination.homeAgent.getName().equals(thisNode.getName())) {
+						//if a0.homeAgent == X
+						//neu co contact voi a0 thi gui cho a0 
+							// chac da duoc xu ly
+						// neu khong co contact voi a0
+						/*
+						 * thismessage.kind = 1
+							tao message moi, chua message nay ben trong, kind = 2
+							gui no di tu X -> X.locationOfCh[X.childAgent.indexof(a0)]
+									//neu location chua moi thi chi giu lai
+							giu message lai tai X
+						 */
+						if (m.kind !=20 && m.kind !=40 && m.kind != 10) {
+							m.kind = 1;
+							DTNHost newLocate = thisNode.locationOfChid.get(thisNode.childLocation.indexOf(destination));
+							if (!newLocate.getName().equals(thisNode.getName())) {
+								m.kind = 20;
+								Double randDouble = new Random().nextDouble();
+								String randString = "Retrans" + randDouble.toString();
+								Message newM = new Message(thisNode, newLocate,randString,m.getSize(), 2, m, null, null);
+								createNewMessage(newM);
+							}							
+						}
 					}
-					if (retVal == RCV_OK) {
-						return; // accepted a message, don't try
-						// others
+					else {
+						Connection con = findNextChildConnection(m.getTo());
+						int retVal;
+						if (con == null) {
+							retVal = startTransfer(m, upClusterConnection);
+						} else {
+							retVal = startTransfer(m, con);
+						}
+						if (retVal == RCV_OK) {
+							return; // accepted a message, don't try
+							// others
 
+						}
 					}
+					if (m.kind == 40) {
+						messages.remove(m);
+					}
+				}
+				else {
+					//if (m.kind == 40 || m.kind == 10) messages.remove(m);
 				}
 			}
 		}
