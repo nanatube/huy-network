@@ -36,13 +36,13 @@ SimpleRouter.gamma = 20
 SimpleRouter.familiarThreshold = 100
 QualityEpidemic.familiarThreshold = 100
 Group.bufferSize = 5M
-Group.waitTime = 50, 120
+Group.waitTime = 600, 700
 #All nodes have the firstinterface inteface
 Group.nrofInterfaces = 1
 Group.interface1 = firstinterface
 # walking speeds
-Group.speed = 0.5, 1.5
-#Group.speed = 0, 0
+#Group.speed = 0.5, 1.5
+Group.speed = 0, 0
 #Group.msgTtl = 60
 
 Group.nrofHosts = 1
@@ -103,7 +103,7 @@ Events.nrof = 1
 Events1.class = MessageEventGenerator
 # (following settings are specific for the MessageEventGenerator class)
 # Creation interval in seconds (one new message every 25 to 35 seconds)
-Events1.interval = 25, 350
+Events1.interval = 25, 3500
 # Message sizes (50kB - 150kB)
 Events1.size = 50k,150k
 # range of message source/destination addresses

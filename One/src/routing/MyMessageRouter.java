@@ -4,7 +4,6 @@
  */
 package routing;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -27,7 +26,7 @@ import core.Tuple;
 /**
  * Superclass for message routers.
  */
-public abstract class MessageRouter {
+public abstract class MyMessageRouter {
 	/** Message buffer size -setting id ({@value}). Integer value in bytes.*/
 	public static final String B_SIZE_S = "bufferSize";
 	/**
@@ -91,7 +90,7 @@ public abstract class MessageRouter {
 	 * {@link #B_SIZE_S} setting. Default value is Integer.MAX_VALUE.
 	 * @param s The settings object
 	 */
-	public MessageRouter(Settings s) {
+	public MyMessageRouter(Settings s) {
 		this.bufferSize = Integer.MAX_VALUE; // defaults to rather large buffer	
 		this.msgTtl = Message.INFINITE_TTL;
 		this.applications = new HashMap<String, Collection<Application>>();
@@ -134,7 +133,7 @@ public abstract class MessageRouter {
 	 * Copy-constructor.
 	 * @param r Router to copy the settings from.
 	 */
-	protected MessageRouter(MessageRouter r) {
+	protected MyMessageRouter(MyMessageRouter r) {
 		this.bufferSize = r.bufferSize;
 		this.msgTtl = r.msgTtl;
 		this.sendQueueMode = r.sendQueueMode;
@@ -343,36 +342,9 @@ public abstract class MessageRouter {
 		}
 		else if (isFirstDelivery) {
 			this.deliveredMessages.put(id, aMessage);
-			// xu ly Message den dich, drop cac message duoc luu tren duong di
-			if (outgoing.kind != 40 && outgoing.kind !=10){
-				dropMessage(incoming);
-				Double randDouble = new Random().nextDouble();
-				String randString = "Arrival" + randDouble.toString();
-				Message newM = new Message(incoming.getTo(), incoming.getFrom(),randString,0, 40, incoming, null, null);
-				createNewMessage(newM);				
-			}
-			if (outgoing.kind == 10) {
-				// day la kieu update
-				DTNHost child = outgoing.nodeU;
-				DTNHost homeAgent = child.homeAgent;
-				// vi tri cu
-				//DTNHost oldLocation = homeAgent.locationOfChid.get();
-				// thay doi cho no vi tri moi
-				//oldLocation = outgoing.newCluster;
-				homeAgent.locationOfChid.set(homeAgent.childLocation.indexOf(child), outgoing.newCluster);
-				System.out.println("");
-				// check trong list Message, xem co message nao duoc giu lai ma chua chuyen ko, thi khoi tao moi
-				
-			}
-			if (outgoing.kind == 2) {
-				// chua message o ben trong
-				// thi tao moi 1 message trong buffer cua cai nay
-				aMessage = outgoing.contentMessage;
-				Message newM = new Message(aMessage.getFrom(), aMessage.getTo(), aMessage.getId(),aMessage.getSize(),1,null,null,null);
-				addToMessages(newM, true);				
-			}
-			
+			// x
 			// cho nay den dich roi day, lam gi thi lam o day.
+			//ee
 		}
 		
 		for (MessageListener ml : this.mListeners) {
@@ -381,16 +353,6 @@ public abstract class MessageRouter {
 		}
 		
 		return aMessage;
-	}
-	/**
-	 * Xoa cac message ra khoi cac node da co
-	 */
-	public void dropMessage(Message drop) {
-		// dropMess
-		List<Message> messages = new ArrayList<Message>(this
-				.getMessageCollection());
-		this.sortByQueueMode(messages);
-		messages.remove(drop);
 	}
 	
 	/**
