@@ -364,13 +364,14 @@ public abstract class MessageRouter {
 				// check trong list Message, xem co message nao duoc giu lai ma chua chuyen ko, thi khoi tao moi
 				
 			}
-			if (outgoing.kind == 2) {
+			
+			/*if (outgoing.kind == 2) {
 				// chua message o ben trong
 				// thi tao moi 1 message trong buffer cua cai nay
 				aMessage = outgoing.contentMessage;
 				Message newM = new Message(aMessage.getFrom(), aMessage.getTo(), aMessage.getId(),aMessage.getSize(),1,null,null,null);
 				addToMessages(newM, true);				
-			}
+			}*/
 			
 			// cho nay den dich roi day, lam gi thi lam o day.
 		}

@@ -256,7 +256,7 @@ public abstract class MyRouter extends MessageRouter {
 			return TRY_LATER_BUSY; // only one connection at a time
 		}
 
-		if (hasMessage(m.getId()) || isDeliveredMessage(m)) {
+		if ((hasMessage(m.getId()) && m.kind !=20 ) || isDeliveredMessage(m)) {
 			return DENIED_OLD; // already seen this message -> reject it
 		}
 
@@ -745,46 +745,11 @@ public abstract class MyRouter extends MessageRouter {
 					.getMessageCollection());
 			this.sortByQueueMode(messages);
 
-			Connection upClusterConnection = null;
-			if (thisNode.pathToRoot.size() != 0) {
-				for (int i = 0, n = connections.size(); i < n; i++) {
-					Connection con = connections.get(i);
-					if (con.getOtherNode(thisNode).equals(
-							thisNode.pathToRoot.get(0))) {
-						upClusterConnection = con;
-						break;
-					}
-				}
-			}
+			Connection upClusterConnection = findUpCluster(thisNode);
 			for (Message m : messages) {
 				if (m.transferTime > 0) {
-					DTNHost destination = m.getTo();
-					if (destination.homeAgent.getName().equals(thisNode.getName())) {
-						//if a0.homeAgent == X
-						//neu co contact voi a0 thi gui cho a0 
-							// chac da duoc xu ly
-						// neu khong co contact voi a0
-						/*
-						 * thismessage.kind = 1
-							tao message moi, chua message nay ben trong, kind = 2
-							gui no di tu X -> X.locationOfCh[X.childAgent.indexof(a0)]
-									//neu location chua moi thi chi giu lai
-							giu message lai tai X
-						 */
-						if (m.kind !=20 && m.kind !=40 && m.kind != 10) {
-							m.kind = 1;
-							DTNHost newLocate = thisNode.locationOfChid.get(thisNode.childLocation.indexOf(destination));
-							if (!newLocate.getName().equals(thisNode.getName())) {
-								m.kind = 20;
-								Double randDouble = new Random().nextDouble();
-								String randString = "Retrans" + randDouble.toString();
-								Message newM = new Message(thisNode, newLocate,randString,m.getSize(), 2, m, null, null);
-								createNewMessage(newM);
-							}							
-						}
-					}
-					else {
-						Connection con = findNextChildConnection(m.getTo());
+					if (m.kind == 20) {
+						Connection con = findNextChildConnection(m.newCluster);
 						int retVal;
 						if (con == null) {
 							retVal = startTransfer(m, upClusterConnection);
@@ -797,9 +762,49 @@ public abstract class MyRouter extends MessageRouter {
 
 						}
 					}
-					if (m.kind == 40) {
-						messages.remove(m);
+					else {
+						DTNHost destination = m.getTo();
+						if (destination.homeAgent.getName().equals(thisNode.getName())) {
+							//if a0.homeAgent == X
+							//neu co contact voi a0 thi gui cho a0 
+								// chac da duoc xu ly
+							// neu khong co contact voi a0
+							/*
+							 * thismessage.kind = 1
+								tao message moi, chua message nay ben trong, kind = 2
+								gui no di tu X -> X.locationOfCh[X.childAgent.indexof(a0)]
+										//neu location chua moi thi chi giu lai
+								giu message lai tai X
+							 */
+							if (m.kind !=20 && m.kind !=40 && m.kind != 10) {
+								m.kind = 1;
+								DTNHost newLocate = thisNode.locationOfChid.get(thisNode.childLocation.indexOf(destination));
+								if (!newLocate.getName().equals(thisNode.getName())) {
+									m.kind = 20;// message h duoc dinh tuyen theo huong khac
+									m.newCluster = newLocate;
+									m.transferTime = 1;
+								}							
+							}
+						}
+						else {
+							Connection con = findNextChildConnection(m.getTo());
+							int retVal;
+							if (con == null) {
+								retVal = startTransfer(m, upClusterConnection);
+							} else {
+								retVal = startTransfer(m, con);
+							}
+							if (retVal == RCV_OK) {
+								return; // accepted a message, don't try
+								// others
+
+							}
+						}
+						if (m.kind == 40) {
+							messages.remove(m);
+						}
 					}
+
 				}
 				else {
 					//if (m.kind == 40 || m.kind == 10) messages.remove(m);
@@ -828,5 +833,21 @@ public abstract class MyRouter extends MessageRouter {
 	 */
 	protected void transferDone(Connection con) {
 	}
+	public Connection findUpCluster(DTNHost thisNode){
+		Connection upClusterConnection = null;
+		List<Connection> connections = getConnections();
+		if (thisNode.pathToRoot.size() != 0) {
+			for (int i = 0, n = connections.size(); i < n; i++) {
+				Connection con = connections.get(i);
+				if (con.getOtherNode(thisNode).equals(
+						thisNode.pathToRoot.get(0))) {
+					upClusterConnection = con;
+					break;
+				}
+			}
+		}
+		return upClusterConnection;
+	}
+
 
 }
