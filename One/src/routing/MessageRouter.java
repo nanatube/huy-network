@@ -344,13 +344,13 @@ public abstract class MessageRouter {
 		else if (isFirstDelivery) {
 			this.deliveredMessages.put(id, aMessage);
 			// xu ly Message den dich, drop cac message duoc luu tren duong di
-			if (outgoing.kind != 40 && outgoing.kind !=10){
-				dropMessage(incoming);
+			/*if (outgoing.kind != 40 && outgoing.kind !=10){
+				deleteMessage(incoming.getId(), true);
 				Double randDouble = new Random().nextDouble();
 				String randString = "Arrival" + randDouble.toString();
 				Message newM = new Message(incoming.getTo(), incoming.getFrom(),randString,0, 40, incoming, null, null);
 				createNewMessage(newM);				
-			}
+			}*/
 			if (outgoing.kind == 10) {
 				// day la kieu update
 				DTNHost child = outgoing.nodeU;
@@ -383,16 +383,7 @@ public abstract class MessageRouter {
 		
 		return aMessage;
 	}
-	/**
-	 * Xoa cac message ra khoi cac node da co
-	 */
-	public void dropMessage(Message drop) {
-		// dropMess
-		List<Message> messages = new ArrayList<Message>(this
-				.getMessageCollection());
-		this.sortByQueueMode(messages);
-		messages.remove(drop);
-	}
+
 	
 	/**
 	 * Puts a message to incoming messages buffer. Two messages with the

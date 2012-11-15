@@ -5,13 +5,16 @@ import input.WKTMapReader;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.Vector;
 
+import movement.map.DijkstraPathFinder;
 import movement.map.MapNode;
 import movement.map.SimMap;
 import core.Coord;
@@ -26,9 +29,10 @@ public class SemiClusterMovement extends RandomWaypoint {
 	/** Center point of the cluster */
 	public static final String CLUSTER_CENTER = "clusterCenter";
 
-	private double p_x_center = 100, p_y_center = 100;
 	private double p_range = 100.0;
 	protected MapNode lastMapNode;
+	protected MapNode homeMapNode;
+	protected MapNode targetNode;
 	private SimMap map = null;
 	/** map based movement model's settings namespace ({@value} ) */
 	public static final String MAP_BASE_MOVEMENT_NS = "MapBasedMovement";
@@ -48,41 +52,50 @@ public class SemiClusterMovement extends RandomWaypoint {
 	protected int minPathLength = 10;
 	/** May a node choose to move back the same way it came at a crossing */
 	protected boolean backAllowed;
+	private DijkstraPathFinder pathFinder;
+	protected Path path;
 
 	public void setCenter(Coord coord) {
-		this.p_x_center = coord.getX();
-		this.p_y_center = coord.getY();
+		List<MapNode> nodes = map.getNodes();
+		MapNode n = null;
+		for (int i = 0; i < nodes.size(); i++) {
+			if (nodes.get(i).getLocation().equals(coord)) {
+				n = nodes.get(i);
+				break;
+			}
+		}
+		this.lastMapNode = n;
 	}
-	
-	public Coord getCenter(){
-		return new Coord(this.p_x_center, this.p_y_center);
+
+	public Coord getCenter() {
+		return this.lastMapNode.getLocation();
 	}
 
 	public SemiClusterMovement(Settings s) {
 		super(s);
+		map = readMap();
 		if (s.contains(CLUSTER_RANGE)) {
 			this.p_range = s.getDouble(CLUSTER_RANGE);
 		}
 		if (s.contains(CLUSTER_CENTER)) {
 			int[] center = s.getCsvInts(CLUSTER_CENTER, 2);
-			this.p_x_center = center[0];
-			this.p_y_center = center[1];
+			setCenter(new Coord(center[0], center[1]));
 		}
-		map = readMap();
 		maxPathLength = 100;
 		minPathLength = 10;
 		backAllowed = false;
+		pathFinder = new DijkstraPathFinder(new int[] {});
 	}
 
 	public SemiClusterMovement(SemiClusterMovement semiClusterMovement) {
 		super(semiClusterMovement);
 		this.p_range = semiClusterMovement.p_range;
-		this.p_x_center = semiClusterMovement.p_x_center;
-		this.p_y_center = semiClusterMovement.p_y_center;
 		this.map = semiClusterMovement.map;
+		setCenter(semiClusterMovement.lastMapNode.getLocation());
 		this.minPathLength = semiClusterMovement.minPathLength;
 		this.maxPathLength = semiClusterMovement.maxPathLength;
 		this.backAllowed = semiClusterMovement.backAllowed;
+		this.pathFinder = new DijkstraPathFinder(new int[] {});
 	}
 
 	@Override
@@ -90,14 +103,15 @@ public class SemiClusterMovement extends RandomWaypoint {
 		Coord randCoord = randomCoordFromCenter();
 		List<MapNode> nodes = map.getNodes();
 		MapNode n = null;
-		for (int i=0;i<nodes.size();i++){
-			if (nodes.get(i).getLocation().equals(getCenter())){
+		for (int i = 0; i < nodes.size(); i++) {
+			if (nodes.get(i).getLocation().equals(getCenter())) {
 				n = nodes.get(i);
 				break;
 			}
 		}
 
 		this.lastMapNode = n;
+		this.homeMapNode = n;
 		this.lastWaypoint = randCoord;
 		return randCoord;
 	}
@@ -212,42 +226,81 @@ public class SemiClusterMovement extends RandomWaypoint {
 		return cachedMap;
 	}
 
-	protected Coord randomCoordFromCenter(){
+	protected Coord randomCoordFromCenter() {
 		double x = (rng.nextDouble() * 2 - 1) * this.p_range;
 		double y = (rng.nextDouble() * 2 - 1) * this.p_range;
 		while (x * x + y * y > this.p_range * this.p_range) {
 			x = (rng.nextDouble() * 2 - 1) * this.p_range;
 			y = (rng.nextDouble() * 2 - 1) * this.p_range;
 		}
-		x += this.p_x_center;
-		y += this.p_y_center;
+		Coord center = getCenter();
+		x += center.getX();
+		y += center.getY();
 		return new Coord(x, y);
 	}
-	
+
+	protected MapNode nextMapNodeToward(MapNode to) {
+		Queue<MapNode> queue = new LinkedList<MapNode>();
+		Map<MapNode, MapNode> trace = new HashMap<MapNode, MapNode>();
+		while (true) {
+			for (MapNode node : to.getNeighbors()) {
+				if (node.equals(this.lastMapNode)) {
+					return to;
+				} else {
+					queue.add(node);
+				}
+			}
+			to = queue.poll();
+		}
+	}
+
 	@Override
 	protected Coord randomCoord() {
-		double d = rng.nextDouble();
-		if (d > 0.1) {
+		if (this.lastMapNode.equals(this.homeMapNode)) {
+			double d = rng.nextDouble();
+			if (d > 0.1) {
+				return randomCoordFromCenter();
+			} else {
+				List<MapNode> nodes = map.getNodes();
+				do {
+					int i = rng.nextInt(nodes.size());
+					targetNode = nodes.get(i);
+				} while (targetNode.equals(this.lastMapNode)
+						|| targetNode.getLocation().getX() == 0);
+				MapNode nextNode = nextMapNodeToward(targetNode);
+				lastMapNode = nextNode;
+				setCenter(lastMapNode.getLocation());
+				return randomCoordFromCenter();
+			}
+		} else if (!this.lastMapNode.equals(this.targetNode)) {
+			MapNode nextNode = nextMapNodeToward(targetNode);
+			lastMapNode = nextNode;
+			setCenter(lastMapNode.getLocation());
 			return randomCoordFromCenter();
 		} else {
-			MapNode curNode = this.lastMapNode;
-			MapNode prevNode = lastMapNode;
-			MapNode nextNode = null;
-			List<MapNode> neighbors = curNode.getNeighbors();
-			Vector<MapNode> n2 = new Vector<MapNode>(neighbors);
-			if (n2.size() == 0) { // only option is to go back
-				nextNode = prevNode;
-			} else { // choose a random node from remaining neighbors
-				do{
-				nextNode = n2.get(rng.nextInt(n2.size()));
-				}while (nextNode.getLocation().getX()==0);
+			double d = rng.nextDouble();
+			if (d < 0.1) {
+				return randomCoordFromCenter();
+			} else if (d < 0.3) {
+				List<MapNode> nodes = map.getNodes();
+				MapNode oldTargetNode = targetNode;
+				do {
+					int i = rng.nextInt(nodes.size());
+					targetNode = nodes.get(i);
+				} while (targetNode.equals(oldTargetNode)
+						|| targetNode.equals(this.lastMapNode)
+						|| targetNode.getLocation().getX() == 0);
+				MapNode nextNode = nextMapNodeToward(targetNode);
+				lastMapNode = nextNode;
+				setCenter(lastMapNode.getLocation());
+				return randomCoordFromCenter();
+			} else {
+				targetNode = homeMapNode;
+				MapNode nextNode = nextMapNodeToward(targetNode);
+				lastMapNode = nextNode;
+				setCenter(lastMapNode.getLocation());
+				return randomCoordFromCenter();
 			}
-
-			prevNode = curNode;
-			curNode = nextNode;
-			lastMapNode = curNode;
-			this.setCenter(curNode.getLocation());
-			return randomCoordFromCenter();
 		}
 	}
 
