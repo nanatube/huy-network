@@ -6,9 +6,7 @@ package core;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import movement.MovementModel;
 import movement.Path;
@@ -17,6 +15,8 @@ import routing.RoutingInfo;
 
 /**
  * A DTN capable host.
+ * Modified by Huong
+ * 
  */
 public class DTNHost implements Comparable<DTNHost> {
 	private static int nextAddress = 0;
@@ -36,15 +36,18 @@ public class DTNHost implements Comparable<DTNHost> {
 	private List<NetworkInterface> net;
 	private ModuleCommunicationBus comBus;
 	
+	//appended parameters by Huong
 	
-	public int numConnection;
-	public int numClusterConnection;
-	public DTNHost homeAgent;
-	public List<DTNHost> pathToRoot;
-	public List<DTNHost> childrenMap;
-	public List<DTNHost> childLocation;
-	public List<DTNHost> locationOfChid;
-	public Map<DTNHost, Double> meetingProb;
+	public String logicID; // logic ID of Node, this is generate based on social character of Node.
+	private DTNHost homeAgent; // homeAgent of this node if it is mobile
+	public List<DTNHost> children; // list of children 
+	public List<DTNHost> childrenLocation; 
+	// list of fixed node that childrenLocation[i] is the nearest fixed node to the children[i]
+	
+	
+	// public information to say other;
+	public String status;
+	
 
 	static {
 		DTNSim.registerForReset(DTNHost.class.getCanonicalName());
@@ -98,14 +101,13 @@ public class DTNHost implements Comparable<DTNHost> {
 				l.initialLocation(this, this.location);
 			}
 		}
-		this.numConnection = 0;
-		this.numClusterConnection = 0;
+		
+		// appended parameters by Huong
+		this.logicID = "";
 		this.homeAgent = null;
-		this.pathToRoot = new ArrayList<DTNHost>();
-		this.childrenMap = new ArrayList<DTNHost>();
-		this.meetingProb = new HashMap<DTNHost, Double>();
-		this.locationOfChid = new ArrayList<DTNHost>();
-		this.childLocation = new ArrayList<DTNHost>();
+		this.children = new ArrayList<DTNHost>();
+		this.childrenLocation = new ArrayList<DTNHost>();
+		this.status = "";
 	}
 	
 	/**
@@ -521,49 +523,18 @@ public class DTNHost implements Comparable<DTNHost> {
 		return this.getAddress() - h.getAddress();
 	}
 	
-	public String getName(){
-		return this.name;
+	public void setLogicID(String s) {
+		this.logicID = s;
 	}
 	
-	public void setPathToRoot(DTNHost father){
-		for (DTNHost far : father.pathToRoot) {
-			boolean check = false;
-			for (DTNHost child : this.pathToRoot) {
-				if (far.getName().equals(child.getName())) {
-					check = true;
-				}
-			}
-			if (!check) {
-				this.pathToRoot.add(far);
-			}
-		}
+	public boolean setHomeAgent(DTNHost h){
+		if (this.homeAgent != null) return false;
+		this.homeAgent = h;
+		return true;
 	}
 	
-	public void addChild(DTNHost children){
-		boolean check = false;
-		for (DTNHost child : this.childrenMap){
-			if (child.getName().equals(this.getName())) {
-				check = true;
-			}
-		}
-		if (!check) {
-			this.childrenMap.add(children);
-		}
+	public DTNHost getHomeAgen(){
+		return this.homeAgent;
 	}
-	public void removePathToRoot(DTNHost father){
-		this.pathToRoot.clear();
-		updateChildPath();		
-	}
-	
-	public void removeChild(DTNHost children){		
-		this.childrenMap.remove(children);
-	}
-	public void updateChildPath() {
-		for (DTNHost child : this.childrenMap) {
-			child.setPathToRoot(this);
-			child.updateChildPath();
-		}		
-	}
-
 
 }

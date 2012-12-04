@@ -2,6 +2,7 @@
  * Copyright 2010 Aalto University, ComNet
  * Released under GPLv3. See LICENSE.txt for details. 
  */
+//modify by Huong
 package core;
 
 import java.util.ArrayList;
@@ -63,9 +64,16 @@ public class Message implements Comparable<Message> {
 	public DTNHost nodeU;
 
 	/** Application ID of the application that created the message */
-	private String appID;
 
+	private String	appID;
+	
+	//appended parameters by Huong
+	public int transferableTime = 1;// number of copies that are acceptable. if this number is 0, node can not copies message for any node
+	// init value is 1 means single copy.
+	
+	
 	static {
+
 		reset();
 		DTNSim.registerForReset(Message.class.getCanonicalName());
 	}
