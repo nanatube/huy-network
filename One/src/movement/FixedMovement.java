@@ -1,9 +1,3 @@
-/*
- * @(#)FixedMovement.java
- *
- * Copyright 2010 by University of Pittsburgh, released under GPLv3.
- * 
- */
 package movement;
 
 import input.WKTReader;
@@ -16,17 +10,6 @@ import movement.map.SimMap;
 
 import core.*;
 
-/**
- * A simple stationary movement model where the node positions are specified in 
- * a WKT file. The nodes can be assigned positions in the order they appear in 
- * the file or select their position randomly from the list. Also, no two nodes 
- * take the same position. If the file contains too few locations, a 
- * SettingsError is thrown since it's expected two nodes of the same group 
- * wouldn't need to rest on top of each other for the whole simulation.
- * 
- * @author PJ Dillon, University of Pittsburgh
- *
- */
 public class FixedMovement extends MapBasedMovement
 {
 	/** Path to a file containing locations -setting id {@value} */

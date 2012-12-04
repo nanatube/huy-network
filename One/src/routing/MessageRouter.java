@@ -4,7 +4,6 @@
  */
 package routing;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -65,14 +64,15 @@ public abstract class MessageRouter {
 	public static final int DENIED_TTL = -3;
 	/** Receive return value for unspecified reason */
 	public static final int DENIED_UNSPECIFIED = -999;
-	
-	private List<MessageListener> mListeners;
+	//ENM
+        public static final int DENIED_DELIVERED = -4;
+	public List<MessageListener> mListeners;
 	/** The messages being transferred with msgID_hostName keys */
 	private HashMap<String, Message> incomingMessages;
 	/** The messages this router is carrying */
 	private HashMap<String, Message> messages; 
 	/** The messages this router has received as the final recipient */
-	private HashMap<String, Message> deliveredMessages;
+	public HashMap<String, Message> deliveredMessages;
 	/** Host where this router belongs to */
 	private DTNHost host;
 	/** size of the buffer */
@@ -343,37 +343,6 @@ public abstract class MessageRouter {
 		}
 		else if (isFirstDelivery) {
 			this.deliveredMessages.put(id, aMessage);
-			// xu ly Message den dich, drop cac message duoc luu tren duong di
-			/*if (outgoing.kind != 40 && outgoing.kind !=10){
-				deleteMessage(incoming.getId(), true);
-				Double randDouble = new Random().nextDouble();
-				String randString = "Arrival" + randDouble.toString();
-				Message newM = new Message(incoming.getTo(), incoming.getFrom(),randString,0, 40, incoming, null, null);
-				createNewMessage(newM);				
-			}*/
-			if (outgoing.kind == 10) {
-				// day la kieu update
-				DTNHost child = outgoing.nodeU;
-				DTNHost homeAgent = child.homeAgent;
-				// vi tri cu
-				//DTNHost oldLocation = homeAgent.locationOfChid.get();
-				// thay doi cho no vi tri moi
-				//oldLocation = outgoing.newCluster;
-				homeAgent.locationOfChid.set(homeAgent.childLocation.indexOf(child), outgoing.newCluster);
-				System.out.println("");
-				// check trong list Message, xem co message nao duoc giu lai ma chua chuyen ko, thi khoi tao moi
-				
-			}
-			
-			/*if (outgoing.kind == 2) {
-				// chua message o ben trong
-				// thi tao moi 1 message trong buffer cua cai nay
-				aMessage = outgoing.contentMessage;
-				Message newM = new Message(aMessage.getFrom(), aMessage.getTo(), aMessage.getId(),aMessage.getSize(),1,null,null,null);
-				addToMessages(newM, true);				
-			}*/
-			
-			// cho nay den dich roi day, lam gi thi lam o day.
 		}
 		
 		for (MessageListener ml : this.mListeners) {
@@ -383,7 +352,6 @@ public abstract class MessageRouter {
 		
 		return aMessage;
 	}
-
 	
 	/**
 	 * Puts a message to incoming messages buffer. Two messages with the

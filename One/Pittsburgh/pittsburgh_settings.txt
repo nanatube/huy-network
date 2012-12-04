@@ -1,0 +1,305 @@
+MovementModel.worldSize = 18200, 11700
+
+MapBasedMovement.nrofMapFiles = 1
+MapBasedMovement.mapFile1 = Pittsburgh.wkt
+MapBasedMovement.performChecks = true
+
+# Common settings for buses since they have the most groups
+Group.movementModel = BusMovement
+Group.routeType = 1
+
+Scenario.nrofHostGroups = 28
+Scenario.name = Pittsburgh
+Scenario.updateInterval = 0.1
+# 43200s == 12h
+Scenario.endTime = 43200
+Scenario.simulateConnections = true
+
+#
+# WiFi Access Point
+#
+Group1.groupID= ap
+Group1.nrofHosts = 5
+Group1.nrOfLocationFiles = 3
+Group1.locationsFile1 = APs/Starbucks.wkt
+Group1.locationsFile2 = APs/localCoffeeShops.wkt
+Group1.locationsFile3 = APs/APs.wkt
+Group1.movementModel = FixedMovement
+Group1.randomPlacement = false
+
+Group2.groupID= cell
+Group2.nrofHosts = 5
+Group2.nrOfLocationFiles = 2
+Group2.locationsFile1 = APs/cellTower.wkt
+Group2.locationsFile2 = APs/cellAntennas.wkt
+Group2.movementModel = FixedMovement
+Group2.randomPlacement = false
+
+#
+# Bus Groups
+#
+Group3.groupID = 71A_
+Group3.nrofHosts = 4
+Group3.routeFile = routes/71A.wkt
+Group3.busControlSystemNr = 1
+
+Group4.groupID= 75_
+Group4.nrofHosts = 3
+Group4.routeFile = routes/75.wkt
+Group4.busControlSystemNr = 2
+
+Group5.groupID= 54C_
+Group5.nrofHosts = 8
+Group5.routeFile = routes/54C.wkt
+Group5.busControlSystemNr = 3
+
+Group6.groupID= 51B_
+Group6.nrofHosts = 4
+Group6.routeFile = routes/51B.wkt
+Group6.busControlSystemNr = 4
+
+Group7.groupID = 61D_
+Group7.nrofHosts = 4
+Group7.routeFile = routes/61D.wkt
+Group7.busControlSystemNr = 5
+
+Group8.groupID = G2_
+Group8.nrofHosts = 5
+Group8.routeFile = routes/G2.wkt
+Group8.busControlSystemNr = 6
+
+Group9.groupID= 1F_
+Group9.nrofHosts = 4
+Group9.routeFile = routes/1F.wkt
+Group9.busControlSystemNr = 7
+
+Group10.groupID= EBA_
+Group10.nrofHosts = 3
+Group10.routeFile = routes/EBA.wkt
+Group10.busControlSystemNr = 8
+
+Group11.groupID= 77D_
+Group11.nrofHosts = 3
+Group11.routeFile = routes/77D.wkt
+Group11.busControlSystemNr = 9
+
+Group12.groupID= 74B_
+Group12.nrofHosts = 4
+Group12.routeFile = routes/74B.wkt
+Group12.busControlSystemNr = 10
+
+Group13.groupID= 64_
+Group13.nrofHosts = 4
+Group13.routeFile = routes/64.wkt
+Group13.busControlSystemNr = 11
+
+Group14.groupID= 43E_
+Group14.nrofHosts = 2
+Group14.routeFile = routes/43E.wkt
+Group14.busControlSystemNr = 12
+
+Group15.groupID= 71C_
+Group15.nrofHosts = 3
+Group15.routeFile = routes/71C.wkt
+Group15.busControlSystemNr = 13
+
+#
+# People groups
+#
+Group16.groupID= hp
+Group16.speed = 2, 5
+Group16.waitTime = 10, 30
+Group16.nrofHosts = 2
+Group16.movementModel = WorkingDayMovement
+Group16.shoppingControlSystemNr = 1
+Group16.busControlSystemNr = 1
+Group16.homeLocationsFile = homes/home-highland.wkt
+Group16.officeLocationsFile = office/office-oakland-dt.wkt
+Group16.meetingSpotsFile = meet/meet-oakland-dt.wkt
+
+Group17.groupID= sh
+Group17.speed = 2, 5
+Group17.waitTime = 10, 30
+Group17.nrofHosts = 2
+Group17.movementModel = WorkingDayMovement
+Group17.shoppingControlSystemNr = 2
+Group17.busControlSystemNr = 2
+Group17.homeLocationsFile = homes/home-shady-75.wkt
+Group17.officeLocationsFile = office/office-oaklandss.wkt
+Group17.meetingSpotsFile = meet/meet-shady-oak-ss.wkt
+
+Group18.groupID= ss
+Group18.speed = 2, 5
+Group18.waitTime = 10, 30
+Group18.nrofHosts = 2
+Group18.movementModel = WorkingDayMovement
+Group18.shoppingControlSystemNr = 3
+Group18.busControlSystemNr = 3
+Group18.homeLocationsFile = homes/home-54C.wkt
+Group18.officeLocationsFile = office/office-54C.wkt
+Group18.meetingSpotsFile = meet/meet-54C.wkt
+
+Group19.groupID= ss
+Group19.speed = 2, 5
+Group19.waitTime = 10, 30
+Group19.nrofHosts = 2
+Group19.movementModel = WorkingDayMovement
+Group19.shoppingControlSystemNr = 4
+Group19.busControlSystemNr = 4
+Group19.homeLocationsFile = homes/home-ss.wkt
+Group19.officeLocationsFile = office/office-dt.wkt
+Group19.meetingSpotsFile = meet/meet-ss.wkt
+
+Group20.groupID= sq
+Group20.speed = 2, 5
+Group20.waitTime = 10, 30
+Group20.nrofHosts = 2
+Group20.movementModel = WorkingDayMovement
+Group20.shoppingControlSystemNr = 5
+Group20.busControlSystemNr = 5
+Group20.homeLocationsFile = homes/home-sqhill.wkt
+Group20.officeLocationsFile = office/office-oakland-dt.wkt
+Group20.meetingSpotsFile = meet/meet-waterfront-sqhill.wkt
+
+Group21.groupID= w
+Group21.speed = 2, 5
+Group21.waitTime = 10, 30
+Group21.nrofHosts = 2
+Group21.movementModel = WorkingDayMovement
+Group21.shoppingControlSystemNr = 1
+Group21.busControlSystemNr = 6
+Group21.homeLocationsFile = homes/home-wbw.wkt
+Group21.officeLocationsFile = office/office-oakland-dt.wkt
+Group21.meetingSpotsFile = meet/meet-oakland-dt.wkt
+
+Group22.groupID= n
+Group22.speed = 2, 5
+Group22.waitTime = 10, 30
+Group22.nrofHosts = 2
+Group22.movementModel = WorkingDayMovement
+Group22.shoppingControlSystemNr = 6
+Group22.busControlSystemNr = 7
+Group22.homeLocationsFile = homes/home-1F.wkt
+Group22.officeLocationsFile = office/office-dt.wkt
+Group22.meetingSpotsFile = meet/meet-dt.wkt
+
+Group23.groupID= e
+Group23.speed = 2, 5
+Group23.waitTime = 10, 30
+Group23.nrofHosts = 2
+Group23.movementModel = WorkingDayMovement
+Group23.shoppingControlSystemNr = 6
+Group23.busControlSystemNr = 8
+Group23.homeLocationsFile = homes/home-eba.wkt
+Group23.officeLocationsFile = office/office-dt.wkt
+Group23.meetingSpotsFile = meet/meet-dt.wkt
+
+Group24.groupID= hp
+Group24.speed = 2, 5
+Group24.waitTime = 10, 30
+Group24.nrofHosts = 2
+Group24.movementModel = WorkingDayMovement
+Group24.shoppingControlSystemNr = 6
+Group24.busControlSystemNr = 9
+Group24.homeLocationsFile = homes/home-highland.wkt
+Group24.officeLocationsFile = office/office-dt.wkt
+Group24.meetingSpotsFile = meet/meet-dt.wkt
+
+Group25.groupID= hp
+Group25.speed = 2, 5
+Group25.waitTime = 10, 30
+Group25.nrofHosts = 2
+Group25.movementModel = WorkingDayMovement
+Group25.shoppingControlSystemNr = 7
+Group25.busControlSystemNr = 10
+Group25.homeLocationsFile = homes/home-highland.wkt
+Group25.officeLocationsFile = office/office-oakland.wkt
+Group25.meetingSpotsFile = meet/meet-oak-shady.wkt
+
+Group26.groupID= lw
+Group26.speed = 2, 5
+Group26.waitTime = 10, 30
+Group26.nrofHosts = 2
+Group26.movementModel = WorkingDayMovement
+Group26.shoppingControlSystemNr = 5
+Group26.busControlSystemNr = 11
+Group26.homeLocationsFile = homes/home-64.wkt
+Group26.officeLocationsFile = office/office-64.wkt
+Group26.meetingSpotsFile = meet/meet-waterfront-sqhill.wkt
+
+Group27.groupID= mw
+Group27.speed = 2, 5
+Group27.waitTime = 10, 30
+Group27.nrofHosts = 2
+Group27.movementModel = WorkingDayMovement
+Group27.shoppingControlSystemNr = 6
+Group27.busControlSystemNr = 12
+Group27.homeLocationsFile = homes/home-mtwash.wkt
+Group27.officeLocationsFile = office/office-dt.wkt
+Group27.meetingSpotsFile = meet/meet-dt.wkt
+
+Group28.groupID= sh
+Group28.speed = 2, 5
+Group28.waitTime = 10, 30
+Group28.nrofHosts = 2
+Group28.movementModel = WorkingDayMovement
+Group28.shoppingControlSystemNr = 7
+Group28.busControlSystemNr = 13
+Group28.homeLocationsFile = homes/home-shady-75.wkt
+Group28.officeLocationsFile = office/office-oakland-dt.wkt
+Group28.meetingSpotsFile = meet/meet-oak-shady.wkt
+
+## Message creation parameters 
+# How many event generators
+Events.nrof = 1
+# Class of the first event generator
+Events1.class = MessageEventGenerator
+# (following settings are specific for the MessageEventGenerator class)
+# Creation interval in seconds (one new message every 25 to 35 seconds)
+Events1.interval = 25,35
+# Message sizes (500kB - 1MB)
+Events1.size = 500k,1M
+# range of message source/destination addresses
+Events1.hosts = 0,125
+# Message ID prefix
+Events1.prefix = M
+
+
+
+## Reports - all report names have to be valid report classes
+
+# how many reports to load
+Report.nrofReports = 1
+# length of the warm up period (simulated seconds)
+Report.warmup = 0
+# default directory of reports (can be overridden per Report with output setting)
+Report.reportDir = reports/
+# Report classes to load
+Report.report1 = MessageStatsReport
+
+## Default settings for some routers settings
+ProphetRouter.secondsInTimeUnit = 30
+SprayAndWaitRouter.nrofCopies = 6
+SprayAndWaitRouter.binaryMode = true
+
+## Optimization settings -- these affect the speed of the simulation
+## see World class for details.
+Optimization.cellSizeMult = 5
+Optimization.randomizeUpdateOrder = true
+
+
+## GUI settings
+
+# GUI underlay image settings
+GUI.UnderlayImage.fileName = data/helsinki_underlay.png
+# Image offset in pixels (x, y)
+GUI.UnderlayImage.offset = 64, 20
+# Scaling factor for the image
+GUI.UnderlayImage.scale = 4.75
+# Image rotation (radians)
+GUI.UnderlayImage.rotate = -0.015
+
+# how many events to show in the log panel (default = 30)
+GUI.EventLogPanel.nrofEvents = 100
+# Regular Expression log filter (see Pattern-class from the Java API for RE-matching details)
+#GUI.EventLogPanel.REfilter = .*p[1-9]<->p[1-9]$

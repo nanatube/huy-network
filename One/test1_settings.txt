@@ -1,0 +1,157 @@
+#
+# Default settings for the simulation
+#
+
+## Scenario settings
+Scenario.name = default_scenario
+Scenario.simulateConnections = true
+Scenario.updateInterval = 0.1
+# 43k ~= 12h
+Scenario.endTime = 43k
+
+firstInterface.type = SimpleBroadcastInterface
+# transmit speed of 2 Mbps = 250kBps
+firstInterface.transmitSpeed = 250k
+firstInterface.transmitRange = 10
+
+
+# High speed, long range, interface for group 4
+highspeedInterface.type = SimpleBroadcastInterface
+highspeedInterface.transmitSpeed = 10M
+highspeedInterface.transmitRange = 510
+
+#"Wire interface" for some fixed node
+wrInterface.type = WiredInterface
+wrInterface.transmitSpeed = 100M
+wrInterface.transmitRange = 20
+
+
+
+Scenario.nrofHostGroups = 5
+
+# common settings for all groups
+Group.movementModel = ShortestPathMapBasedMovement
+
+Group.router = MyRouter
+#Group.router = ProphetRouter
+
+Group.bufferSize = 1M
+Group.waitTime = 100, 200
+#All nodes have the firstInterface interface
+Group.nrofInterfaces = 1
+Group.interface1 = firstInterface
+
+# walking speeds
+Group.speed = 0.5, 1.5
+Group.msgTtl = 60
+#Group.routeType = 2
+
+Group.nrofHosts = 15
+Group.nrofApplications = 0
+
+# The Tram groups
+Group1.groupID = s
+Group1.bufferSize = 50M
+Group1.movementModel = FixedMovement
+Group1.nrOfLocationFiles = 1
+Group1.locationsFile1 = data/FixedLocations/huong.wkt
+Group1.speed = 0, 0
+Group1.nrofHosts = 5
+Group1.nrofInterfaces = 2
+Group1.interface1 = firstInterface
+Group1.interface2 = wrInterface
+
+# group2 (pedestrians 2) specific settings
+Group2.groupID = a
+
+# group3(pedestrians 1) specific settings
+Group3.groupID = b
+
+
+# group2 (pedestrians 2) specific settings
+Group4.groupID = c
+
+
+# group3(pedestrians 1) specific settings
+Group5.groupID = d
+
+
+
+## Map based movement -movement model specific settings
+MapBasedMovement.nrofMapFiles = 2
+MapBasedMovement.mapFile1 = data/cluster/huong2_map.wkt
+MapBasedMovement.mapFile2 = data/cluster/origin.wkt
+
+# Define POI data files
+PointsOfInterest.poiFile1 = data/cluster/office1.wkt
+PointsOfInterest.poiFile2 = data/cluster/office2.wkt
+PointsOfInterest.poiFile3 = data/cluster/meetingPoint1.wkt
+PointsOfInterest.poiFile4 = data/overSea.wkt
+PointsOfInterest.poiFile5 = data/cluster/office3.wkt
+PointsOfInterest.poiFile6 = data/cluster/office4.wkt
+
+# Define probabilities for different groups selecting POIs from different POI files
+Group2.pois = 1,0.8, 3,0.2
+Group3.pois = 2,0.8, 3,0.2
+Group4.pois = 5,0.8, 3,0.2
+Group5.pois = 6,0.8, 3,0.2
+
+
+## Message creation parameters 
+# How many event generators
+Events.nrof = 1
+# Class of the first event generator
+Events1.class = MessageEventGenerator
+# (following settings are specific for the MessageEventGenerator class)
+# Creation interval in seconds (one new message every 25 to 35 seconds)
+Events1.interval = 25, 35
+# Message sizes (50kB - 150kB)
+Events1.size = 100k,200k
+# range of message source/destination addresses
+Events1.hosts = 5, 41
+# Message ID prefix
+Events1.prefix = M
+
+
+## Movement model settings
+# seed for movement models' pseudo random number generator (default = 0)
+MovementModel.rngSeed = 1
+# World's size for Movement Models without implicit size (width, height; meters)
+MovementModel.worldSize = 4500, 3400
+# How long time to move hosts in the world before real simulation
+MovementModel.warmup = 1000
+
+# how many reports to load
+Report.nrofReports = 1
+# length of the warm up period (simulated seconds)
+Report.warmup = 0
+# default directory of reports (can be overridden per Report with output setting)
+Report.reportDir = reports/
+# Report classes to load
+Report.report1 = MessageStatsReport
+
+## Optimization settings -- these affect the speed of the simulation
+## see World class for details.
+Optimization.connectionAlg = 2
+Optimization.cellSizeMult = 5
+Optimization.randomizeUpdateOrder = true
+
+
+## GUI settings
+
+# GUI underlay image settings
+GUI.UnderlayImage.fileName = data/helsinki_underlay.png
+# Image offset in pixels (x, y)
+GUI.UnderlayImage.offset = 64, 20
+# Scaling factor for the image
+GUI.UnderlayImage.scale = 4.75
+# Image rotation (radians)
+GUI.UnderlayImage.rotate = -0.015
+
+# how many events to show in the log panel (default = 30)
+GUI.EventLogPanel.nrofEvents = 30
+# Regular Expression log filter (see Pattern-class from the Java API for RE-matching details)
+#GUI.EventLogPanel.REfilter = .*p[1-9]<->p[1-9]$
+
+
+ProphetRouter.secondsInTimeUnit = 30
